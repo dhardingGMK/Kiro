@@ -1,0 +1,20 @@
+# Game constants
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+FPS = 60
+
+# Colors (Kiro brand)
+PURPLE_500 = (121, 14, 203)
+BLACK_900 = (10, 10, 10)
+PREY_750 = (40, 40, 45)
+PREY_700 = (55, 55, 60)
+WHITE = (255, 255, 255)
+PREY_300 = (180, 180, 185)
+
+# Player
+PLAYER_SIZE = 40
+PLAYER_SPEED = 4
+
+# Room
+ROOM_PADDING = 50
+EXIT_SIZE = 60
