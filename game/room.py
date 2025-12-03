@@ -181,7 +181,7 @@ class Room:
         max_obstacles = 10
         
         # Spawn new through-traffic obstacles if room has multiple exits and not too crowded
-        if len(self.connections) >= 2 and len(self.obstacles) < max_obstacles and random.random() < 0.015:  # 1.5% chance per frame
+        if len(self.connections) >= 2 and len(self.obstacles) < max_obstacles and random.random() < 0.01:  # 1% chance per frame
             self.spawn_through_traffic_obstacle()
         
         for npc in self.npcs:

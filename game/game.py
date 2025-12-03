@@ -30,6 +30,10 @@ class Game:
         # Invincibility frames
         self.invincibility_frames = 0
         
+        # Lives system
+        self.lives = 3
+        self.max_lives = 3
+        
         # Game stats
         self.steps_taken = 0
         self.rooms_visited = set([self.current_room_id])
@@ -121,7 +125,7 @@ class Game:
         opposite_dir = {'north': 'south', 'south': 'north', 'east': 'west', 'west': 'east'}
         current_room = self.maze.get_room(next_room_id)
         current_room.last_entrance = opposite_dir[from_direction]
-        current_room.entrance_cooldown = 180  # 3 seconds
+        current_room.entrance_cooldown = 240  # 4 seconds (increased from 3)
         
         # Position player at opposite entrance
         if from_direction == 'north':
@@ -134,7 +138,7 @@ class Game:
             self.player.x = SCREEN_WIDTH - ROOM_PADDING - self.player.width - 10
         
         # Give brief invincibility after entering
-        self.invincibility_frames = 60  # 1 second
+        self.invincibility_frames = 90  # 1.5 seconds (increased from 1)
         
         # Check if reached goal
         if self.current_room_id == self.maze.goal_room_id:
@@ -142,6 +146,9 @@ class Game:
     
     def on_collision(self):
         """Handle collision with obstacle"""
+        # Lose a life
+        self.lives -= 1
+        
         # Screen shake
         self.shake_amount = 10
         self.shake_duration = 20
@@ -150,17 +157,14 @@ class Game:
         player_rect = self.player.get_rect()
         self.particles.emit(player_rect.centerx, player_rect.centery, PURPLE_500, 20)
         
-        # Reset to start
-        self.reset_to_start()
+        # Give invincibility frames to recover
+        self.invincibility_frames = 150  # 2.5 seconds
+        
+        if self.lives <= 0:
+            # Game over - reset everything
+            self.reset_game()
     
-    def reset_to_start(self):
-        """Reset player to starting room after collision"""
-        self.current_room_id = self.maze.start_room_id
-        self.player.x = SCREEN_WIDTH // 2
-        self.player.y = SCREEN_HEIGHT // 2
-        self.transitioning = True
-        self.transition_alpha = 0
-        self.invincibility_frames = 120  # 2 seconds of invincibility after respawn
+
     
     def draw(self):
         # Apply screen shake
@@ -210,6 +214,33 @@ class Game:
         bg_rect = pygame.Rect(5, SCREEN_HEIGHT - 30, text.get_width() + 10, text.get_height() + 8)
         pygame.draw.rect(surface, PREY_750, bg_rect, border_radius=5)
         surface.blit(text, (10, SCREEN_HEIGHT - 27))
+        
+        # Lives display (top right)
+        lives_x = SCREEN_WIDTH - 150
+        lives_y = 10
+        font_lives = pygame.font.Font(None, 24)
+        lives_text = font_lives.render("Lives:", True, WHITE)
+        surface.blit(lives_text, (lives_x, lives_y))
+        
+        # Draw hearts
+        heart_x = lives_x + 60
+        for i in range(self.max_lives):
+            if i < self.lives:
+                # Full heart
+                pygame.draw.circle(surface, PURPLE_500, (heart_x + i * 30, lives_y + 12), 8)
+                pygame.draw.circle(surface, PURPLE_500, (heart_x + i * 30 + 10, lives_y + 12), 8)
+                points = [
+                    (heart_x + i * 30 + 5, lives_y + 15),
+                    (heart_x + i * 30 - 5, lives_y + 25),
+                    (heart_x + i * 30 + 5, lives_y + 28),
+                    (heart_x + i * 30 + 15, lives_y + 25),
+                    (heart_x + i * 30 + 15, lives_y + 15)
+                ]
+                pygame.draw.polygon(surface, PURPLE_500, points)
+            else:
+                # Empty heart
+                pygame.draw.circle(surface, PREY_700, (heart_x + i * 30, lives_y + 12), 8, 2)
+                pygame.draw.circle(surface, PREY_700, (heart_x + i * 30 + 10, lives_y + 12), 8, 2)
         
         # Stats panel (bottom right)
         stats_width = 200
@@ -301,6 +332,7 @@ class Game:
         self.transitioning = False
         self.transition_alpha = 0
         self.invincibility_frames = 120  # 2 seconds of invincibility on new game
+        self.lives = 3
         self.steps_taken = 0
         self.rooms_visited = set([self.current_room_id])
         self.time_elapsed = 0
