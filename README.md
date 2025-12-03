@@ -3,6 +3,14 @@
 ## Overview
 This game is a satirical play on the first day confusion of navigating Re:Invent for the the first time. With all of the chaos of people trying to make their sessions mixed in with hotel staff and patrons. You may find that some of the help staff themselves get a bit confused, and may give you the wrong instructions!
 
+## Install instructions
+You will need Python installed to be able to run this game. From any terminal, navigate to the directory the game is in. From there run the following commands:
+```
+pip install -r requirements.txt
+
+python main.py
+```
+
 ## Purpose
 The development of this game was done during the AWS Re:Invent session DVT402-R, which utilized the agentic AI IDE Kiro to fully build a game from the ground up. While given the opportunity to try some pre-cooked ideas, I elected to try my own, limit testing Kiro.
 This game was entirely made using their "Vibe mode" feature in which you provide natural language and the agent makes changes to the code accordingly. You will find the steering files are extremely helpful and allow Kiro to know what to do for certain contexts, helping it switch contexts when needed.
